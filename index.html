@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ХАБАРОН — контракты и новости Бара «100 Рентген»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=Saira:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#131409;
+  --panel:#1B1D12;
+  --panel-2:#222517;
+  --panel-3:#2A2E1E;
+  --steel:#3A3F2B;
+  --steel-soft:#2E3221;
+  --amber:#C9A24B;
+  --amber-dim:#8C7534;
+  --rust:#B4552B;
+  --rust-bright:#D06A38;
+  --geiger:#9CC13E;
+  --teal:#4FBFAE;
+  --teal-dim:#2F7A6E;
+  --bone:#CBC7B4;
+  --ash:#8A8676;
+  --ash-dim:#5E5B4E;
+  --hazard-a:#D9B23A;
+  --hazard-b:#16170F;
+
+  --fs-mono-xs:10.5px;
+  --fs-mono-sm:12px;
+  --fs-sm:13px;
+  --fs-base:15px;
+  --fs-md:17px;
+  --fs-lg:21px;
+  --fs-xl:28px;
+
+  --r:3px;
+  --shadow:0 14px 34px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--void);
+  background-image:
+    radial-gradient(circle at 12% 4%, rgba(180,85,43,.09), transparent 42%),
+    radial-gradient(circle at 92% 96%, rgba(156,193,62,.055), transparent 46%);
+  background-attachment:fixed;
+  color:var(--bone);
+  font-family:"Saira",system-ui,sans-serif;
+  font-size:var(--fs-base);line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--rust);color:#fff}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+
+/* ============ HAZARD RULE ============ */
+.hazard{
+  height:7px;
+  background:repeating-linear-gradient(-45deg,
+    var(--hazard-a) 0 11px, var(--hazard-b) 11px 22px);
+  opacity:.72;
+}
+
+/* ============ PDA STATUS BAR ============ */
+.pda{
+  position:sticky;top:0;z-index:60;
+  background:linear-gradient(180deg,#10110A,#171910);
+  border-bottom:1px solid var(--steel);
+  font-family:"IBM Plex Mono",monospace;
+  font-size:var(--fs-mono-xs);
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ash);
+}
+.pda-in{max-width:1320px;margin:0 auto;padding:7px 20px;
+  display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.pda b{color:var(--bone);font-weight:500}
+.pda .ok{color:var(--geiger)}
+.pda .warn{color:var(--amber)}
+.pda .sep{flex:1}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--geiger);
+  display:inline-block;margin-right:6px;vertical-align:1px;
+  box-shadow:0 0 7px var(--geiger);animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.32}}
+
+/* ============ LAYOUT ============ */
+.layout{max-width:1320px;margin:0 auto;padding:0 20px 120px;
+  display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:32px;align-items:start}
+
+/* ============ MASTHEAD ============ */
+header.mast{grid-column:1/-1;padding:34px 0 18px}
+.mast-row{display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap}
+.wordmark{line-height:.86}
+.wordmark .name{
+  font-family:"Saira Condensed",sans-serif;
+  font-weight:800;font-size:clamp(46px,7.4vw,78px);
+  letter-spacing:.02em;color:var(--amber);
+  text-shadow:0 0 26px rgba(201,162,75,.2);
+  display:flex;align-items:baseline;gap:.06em;
+}
+.wordmark .name i{font-style:normal;color:var(--rust-bright)}
+.wordmark .sub{
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-sm);
+  letter-spacing:.3em;text-transform:uppercase;color:var(--ash);
+  margin-top:10px;
+}
+.mast-slogan{
+  margin-left:auto;text-align:right;
+  font-family:"Saira Condensed",sans-serif;font-weight:600;
+  font-size:var(--fs-lg);color:var(--bone);letter-spacing:.04em;
+}
+.mast-slogan span{display:block;font-family:"IBM Plex Mono",monospace;
+  font-size:var(--fs-mono-xs);letter-spacing:.22em;color:var(--ash-dim);
+  text-transform:uppercase;font-weight:400;margin-top:5px}
+
+/* ============ SEARCH + FILTERS ============ */
+.toolbar{grid-column:1/-1;margin:12px 0 22px}
+.search-wrap{position:relative}
+.search{
+  width:100%;background:var(--panel);border:1px solid var(--steel);
+  border-radius:var(--r);color:var(--bone);
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-base);
+  padding:15px 16px 15px 46px;outline:none;transition:border-color .16s,box-shadow .16s;
+}
+.search::placeholder{color:var(--ash-dim)}
+.search:focus{border-color:var(--amber-dim);box-shadow:0 0 0 3px rgba(201,162,75,.12)}
+.search-ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;stroke:var(--ash);fill:none;stroke-width:1.7}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chip{
+  background:var(--panel);border:1px solid var(--steel);color:var(--ash);
+  font-family:"Saira Condensed",sans-serif;font-weight:600;
+  font-size:var(--fs-base);letter-spacing:.06em;text-transform:uppercase;
+  padding:7px 15px;border-radius:var(--r);cursor:pointer;
+  transition:.14s;display:flex;align-items:center;gap:8px;
+}
+.chip:hover{color:var(--bone);border-color:var(--amber-dim)}
+.chip .n{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  color:var(--ash-dim);letter-spacing:0}
+.chip.on{background:var(--amber);border-color:var(--amber);color:#15160D}
+.chips.subs{margin-top:9px;padding-left:2px}
+.chip.sub{
+  background:transparent;border-color:var(--steel-soft);color:var(--ash-dim);
+  font-size:var(--fs-sm);letter-spacing:.05em;padding:5px 12px;
+}
+.chip.sub:hover{color:var(--bone);border-color:var(--steel)}
+.chip.sub.on{background:var(--steel);border-color:var(--amber-dim);color:var(--bone)}
+.chip.sub.on .n{color:var(--amber)}
+.chip.sub.hot{border-color:rgba(208,106,56,.5);color:var(--rust-bright)}
+.chip.sub.hot.on{background:var(--rust);border-color:var(--rust);color:#fff}
+.chip.sub.hot.on .n{color:rgba(255,255,255,.7)}
+.chip.on .n{color:rgba(21,22,13,.62)}
+
+/* ============ CATALOG ============ */
+.cat-block{margin-bottom:38px}
+.cat-head{
+  display:flex;align-items:center;gap:14px;margin:0 0 16px;
+  padding-bottom:9px;border-bottom:1px solid var(--steel);
+}
+.cat-head h2{
+  margin:0;font-family:"Saira Condensed",sans-serif;font-weight:700;
+  font-size:var(--fs-xl);letter-spacing:.05em;text-transform:uppercase;color:var(--bone);
+}
+.cat-head .count{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-sm);
+  color:var(--ash-dim);letter-spacing:.1em}
+
+.grp{margin:0 0 26px}
+.grp-head{
+  display:flex;align-items:center;gap:12px;margin:0 0 12px;
+}
+.grp-head h3{
+  margin:0;font-family:"IBM Plex Mono",monospace;font-weight:600;
+  font-size:var(--fs-mono-sm);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--amber);white-space:nowrap;
+}
+.grp-head .line{flex:1;height:1px;background:linear-gradient(90deg,var(--steel),transparent)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:12px}
+
+.card{
+  background:var(--panel);border:1px solid var(--steel-soft);border-radius:var(--r);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:border-color .15s,transform .15s;
+}
+.card:hover{border-color:var(--amber-dim);transform:translateY(-2px)}
+.thumb{
+  position:relative;aspect-ratio:4/3;background:
+    linear-gradient(180deg,var(--panel-2),#191B10);
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--steel-soft);overflow:hidden;
+}
+.thumb::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.017) 0 1px,transparent 1px 3px);
+}
+.thumb svg{width:76%;height:76%;opacity:.5}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .sil{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.thumb .ph{
+  position:absolute;left:7px;top:7px;font-family:"IBM Plex Mono",monospace;
+  font-size:9px;letter-spacing:.14em;color:var(--ash-dim);text-transform:uppercase;
+}
+.card-body{padding:11px 12px 12px;display:flex;flex-direction:column;gap:9px;flex:1}
+.card-name{
+  font-family:"Saira Condensed",sans-serif;font-weight:600;
+  font-size:var(--fs-md);line-height:1.15;letter-spacing:.02em;color:var(--bone);
+}
+.opts{display:flex;flex-direction:column;gap:5px}
+.seg{display:flex;border:1px solid var(--steel);border-radius:var(--r);overflow:hidden}
+.seg button{
+  flex:1;background:transparent;border:0;color:var(--ash);cursor:pointer;
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.08em;text-transform:uppercase;padding:6px 4px;transition:.14s;
+}
+.seg button+button{border-left:1px solid var(--steel)}
+.seg button:hover{color:var(--bone);background:var(--panel-2)}
+.seg button.on{background:var(--steel);color:var(--bone)}
+.supp{
+  display:flex;align-items:center;gap:7px;cursor:pointer;
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.06em;color:var(--ash);user-select:none;
+}
+.supp input{accent-color:var(--rust);width:13px;height:13px;margin:0;cursor:pointer}
+.supp:hover{color:var(--bone)}
+.card-foot{margin-top:auto;display:flex;align-items:center;gap:9px}
+.price{
+  font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:var(--fs-base);
+  color:var(--amber);letter-spacing:-.01em;flex:1;white-space:nowrap;
+}
+.price small{font-size:var(--fs-mono-xs);color:var(--ash-dim);margin-left:3px}
+.price.ask{color:var(--ash);font-size:var(--fs-mono-sm)}
+.add{
+  background:var(--steel);border:1px solid var(--steel);color:var(--bone);
+  width:32px;height:30px;border-radius:var(--r);cursor:pointer;flex:none;
+  display:flex;align-items:center;justify-content:center;transition:.14s;
+}
+.add:hover{background:var(--rust);border-color:var(--rust);color:#fff}
+.add svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none}
+.add.done{background:var(--geiger);border-color:var(--geiger);color:#15160D}
+
+.empty{
+  padding:56px 20px;text-align:center;color:var(--ash-dim);
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-sm);letter-spacing:.16em;
+  text-transform:uppercase;border:1px dashed var(--steel);border-radius:var(--r);
+}
+
+/* ============ ORDER PANEL ============ */
+.order{
+  position:sticky;top:52px;background:var(--panel);
+  border:1px solid var(--steel);border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.order-top{
+  padding:13px 15px;border-bottom:1px solid var(--steel);
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  display:flex;align-items:center;gap:10px;
+}
+.order-top h2{
+  margin:0;font-family:"Saira Condensed",sans-serif;font-weight:700;
+  font-size:var(--fs-lg);letter-spacing:.09em;text-transform:uppercase;color:var(--bone);
+}
+.order-top .cnt{margin-left:auto;font-family:"IBM Plex Mono",monospace;
+  font-size:var(--fs-mono-xs);color:var(--ash-dim);letter-spacing:.12em}
+.lines{max-height:min(46vh,430px);overflow-y:auto}
+.lines::-webkit-scrollbar{width:8px}
+.lines::-webkit-scrollbar-thumb{background:var(--steel);border-radius:4px}
+.line{padding:11px 15px;border-bottom:1px solid var(--steel-soft);display:flex;gap:10px}
+.line-main{flex:1;min-width:0}
+.line-name{font-family:"Saira Condensed",sans-serif;font-weight:600;
+  font-size:var(--fs-base);line-height:1.2;color:var(--bone)}
+.line-cfg{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  color:var(--ash-dim);letter-spacing:.06em;margin-top:2px}
+.line-sum{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-sm);
+  color:var(--amber);margin-top:4px}
+.qty{display:flex;align-items:center;gap:1px;height:26px;flex:none}
+.qty button{
+  width:24px;height:26px;background:var(--panel-2);border:1px solid var(--steel);
+  color:var(--ash);cursor:pointer;font-size:15px;line-height:1;
+  display:flex;align-items:center;justify-content:center;transition:.14s;
+}
+.qty button:hover{color:var(--bone);background:var(--steel)}
+.qty span{width:28px;text-align:center;font-family:"IBM Plex Mono",monospace;
+  font-size:var(--fs-sm);color:var(--bone)}
+.order-empty{padding:36px 18px;text-align:center;color:var(--ash-dim);
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.14em;text-transform:uppercase;line-height:1.9}
+.order-foot{padding:14px 15px;border-top:1px solid var(--steel);background:var(--panel-2)}
+.total{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.total .lbl{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.18em;text-transform:uppercase;color:var(--ash)}
+.total .val{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-weight:600;
+  font-size:var(--fs-lg);color:var(--amber)}
+.btn{
+  width:100%;padding:12px;border-radius:var(--r);cursor:pointer;
+  font-family:"Saira Condensed",sans-serif;font-weight:700;
+  font-size:var(--fs-md);letter-spacing:.12em;text-transform:uppercase;
+  transition:.15s;border:1px solid transparent;
+}
+.btn-primary{background:var(--rust);border-color:var(--rust);color:#fff}
+.btn-primary:hover{background:var(--rust-bright);border-color:var(--rust-bright)}
+.btn-primary:disabled{background:var(--steel-soft);border-color:var(--steel);
+  color:var(--ash-dim);cursor:not-allowed}
+.btn-ghost{background:transparent;border-color:var(--steel);color:var(--ash);
+  font-size:var(--fs-base);padding:9px;margin-top:7px}
+.btn-ghost:hover{color:var(--bone);border-color:var(--ash-dim)}
+
+/* ============ MODAL ============ */
+.overlay{
+  position:fixed;inset:0;z-index:100;background:rgba(8,9,5,.82);
+  backdrop-filter:blur(3px);display:flex;align-items:flex-start;
+  justify-content:center;padding:40px 18px;overflow-y:auto;
+  opacity:0;pointer-events:none;transition:opacity .18s;
+}
+.overlay.open{opacity:1;pointer-events:auto}
+.modal{
+  width:100%;max-width:520px;background:var(--panel);
+  border:1px solid var(--steel);border-radius:var(--r);
+  box-shadow:var(--shadow);transform:translateY(-8px);transition:transform .18s;
+}
+.overlay.open .modal{transform:none}
+.modal-top{padding:16px 20px;border-bottom:1px solid var(--steel);
+  display:flex;align-items:center;gap:12px;background:var(--panel-2)}
+.modal-top h2{margin:0;font-family:"Saira Condensed",sans-serif;font-weight:700;
+  font-size:var(--fs-lg);letter-spacing:.09em;text-transform:uppercase;color:var(--bone)}
+.x{margin-left:auto;background:transparent;border:0;color:var(--ash);cursor:pointer;
+  font-size:22px;line-height:1;padding:0 3px}
+.x:hover{color:var(--rust-bright)}
+.modal-body{padding:18px 20px}
+.field{margin-bottom:16px}
+.field>label{
+  display:block;font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:6px;
+}
+.field .hint{font-family:"Saira",sans-serif;font-size:var(--fs-sm);
+  color:var(--ash-dim);letter-spacing:0;text-transform:none;margin-top:4px}
+.input,.textarea{
+  width:100%;background:var(--panel-2);border:1px solid var(--steel);
+  border-radius:var(--r);color:var(--bone);font-family:"Saira",sans-serif;
+  font-size:var(--fs-base);padding:11px 13px;outline:none;transition:.15s;
+}
+.textarea{resize:vertical;min-height:74px;line-height:1.45}
+.input::placeholder,.textarea::placeholder{color:var(--ash-dim)}
+.input:focus,.textarea:focus{border-color:var(--amber-dim);box-shadow:0 0 0 3px rgba(201,162,75,.12)}
+.input.err,.textarea.err,.select-btn.err{border-color:var(--rust-bright)}
+
+/* faction select */
+.select{position:relative}
+.select-btn{
+  width:100%;background:var(--panel-2);border:1px solid var(--steel);
+  border-radius:var(--r);color:var(--bone);padding:9px 13px;cursor:pointer;
+  display:flex;align-items:center;gap:11px;text-align:left;
+  font-family:"Saira",sans-serif;font-size:var(--fs-base);transition:.15s;
+}
+.select-btn:hover{border-color:var(--ash-dim)}
+.select-btn .cur{flex:1;color:var(--ash-dim)}
+.select-btn.picked .cur{color:var(--bone)}
+.select-btn .arr{width:11px;height:11px;stroke:var(--ash);stroke-width:2;fill:none}
+.select-list{
+  position:absolute;left:0;right:0;top:calc(100% + 5px);z-index:20;
+  background:var(--panel-3);border:1px solid var(--steel);border-radius:var(--r);
+  max-height:264px;overflow-y:auto;box-shadow:var(--shadow);display:none;
+}
+.select.open .select-list{display:block}
+.select-list::-webkit-scrollbar{width:8px}
+.select-list::-webkit-scrollbar-thumb{background:var(--steel);border-radius:4px}
+.opt{
+  width:100%;background:transparent;border:0;color:var(--bone);cursor:pointer;
+  padding:8px 13px;display:flex;align-items:center;gap:11px;text-align:left;
+  font-family:"Saira",sans-serif;font-size:var(--fs-base);
+}
+.opt:hover,.opt.hl{background:var(--steel-soft)}
+.opt.sel{background:var(--steel)}
+.emb{width:22px;height:22px;flex:none;border-radius:3px}
+
+/* delivery */
+.switch{
+  display:flex;align-items:center;gap:11px;cursor:pointer;user-select:none;
+  background:var(--panel-2);border:1px solid var(--steel);border-radius:var(--r);
+  padding:11px 13px;transition:.15s;
+}
+.switch:hover{border-color:var(--ash-dim)}
+.switch input{accent-color:var(--rust);width:16px;height:16px;margin:0;cursor:pointer}
+.switch .t{flex:1;font-size:var(--fs-base);color:var(--bone)}
+.switch .p{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-sm);color:var(--amber)}
+
+.summary{
+  border:1px solid var(--steel);border-radius:var(--r);background:var(--panel-2);
+  padding:13px;margin-bottom:16px;font-family:"IBM Plex Mono",monospace;
+  font-size:var(--fs-mono-sm);
+}
+.summary .r{display:flex;justify-content:space-between;gap:12px;padding:3px 0;color:var(--ash)}
+.summary .r b{color:var(--bone);font-weight:500}
+.summary .r.big{border-top:1px solid var(--steel);margin-top:7px;padding-top:9px;
+  font-size:var(--fs-md);color:var(--bone)}
+.summary .r.big b{color:var(--amber);font-weight:600}
+
+.note{
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  line-height:1.7;color:var(--ash-dim);letter-spacing:.04em;margin-top:12px;
+}
+.note.warn{color:var(--amber)}
+.steam-btn{
+  background:var(--steel);border:1px solid var(--steel);color:var(--bone);
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  padding:4px 10px;border-radius:var(--r);display:inline-flex;align-items:center;gap:7px;
+  transition:.14s;
+}
+.steam-btn:hover{background:var(--rust);border-color:var(--rust);color:#fff}
+.steam-btn svg{width:13px;height:13px;fill:currentColor}
+.pda .who{color:var(--geiger)}
+.out{background:none;border:0;color:var(--ash-dim);cursor:pointer;
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.12em;text-transform:uppercase;padding:0}
+.out:hover{color:var(--rust-bright)}
+.steam-box{
+  border:1px solid var(--steel);border-radius:var(--r);background:var(--panel-2);
+  padding:13px;margin-bottom:16px;
+}
+.steam-box .row{display:flex;align-items:center;gap:11px}
+.steam-box .txt{flex:1;font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-sm);
+  color:var(--ash);line-height:1.6}
+.steam-box .txt b{color:var(--geiger);font-weight:500}
+.steam-box .big{
+  background:#1B2838;border-color:#2A475E;color:#C7D5E0;
+  font-size:var(--fs-mono-sm);padding:9px 14px;
+}
+.steam-box .big:hover{background:#2A475E;border-color:#66C0F4;color:#fff}
+.note.bad{color:var(--rust-bright)}
+.note.good{color:var(--geiger)}
+
+/* result screen */
+.done-box{padding:34px 24px;text-align:center}
+.done-box .mark{width:56px;height:56px;margin:0 auto 16px;stroke:var(--geiger);
+  fill:none;stroke-width:2}
+.done-box h3{margin:0 0 8px;font-family:"Saira Condensed",sans-serif;font-weight:700;
+  font-size:var(--fs-xl);letter-spacing:.06em;text-transform:uppercase;color:var(--bone)}
+.done-box p{margin:0 0 6px;color:var(--ash);font-size:var(--fs-base)}
+.done-box .num{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-lg);
+  color:var(--amber);letter-spacing:.1em;margin:14px 0 18px}
+
+footer{border-top:1px solid var(--steel);margin-top:20px}
+.foot-in{max-width:1320px;margin:0 auto;padding:22px 20px 40px;
+  display:flex;gap:20px;flex-wrap:wrap;align-items:center;
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ash-dim)}
+.foot-in .sep{flex:1}
+
+
+/* ============ ВКЛАДКИ ============ */
+.tabs{grid-column:1/-1;display:flex;gap:0;align-items:flex-end;
+  border-bottom:1px solid var(--steel);margin:8px 0 20px;flex-wrap:wrap}
+.tab{
+  background:transparent;border:0;border-bottom:2px solid transparent;
+  color:var(--ash);cursor:pointer;padding:11px 20px;
+  font-family:"Saira Condensed",sans-serif;font-weight:700;
+  font-size:var(--fs-lg);letter-spacing:.07em;text-transform:uppercase;
+  transition:.15s;display:flex;align-items:center;gap:9px;
+}
+.tab:hover{color:var(--bone)}
+.tab.on{color:var(--amber);border-bottom-color:var(--amber)}
+.tab .cnt{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  color:var(--ash-dim);letter-spacing:0}
+.tab.on .cnt{color:var(--amber-dim)}
+.tabs .gap{flex:1}
+.tabs .who{
+  display:flex;align-items:center;gap:10px;padding-bottom:9px;
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ash-dim);
+}
+.tabs .who b{color:var(--teal);font-weight:500}
+
+/* переключение видов */
+#boardWrap{grid-column:1/-1}
+
+/* ============ ДОСКА ============ */
+.board-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.board-bar .gap{flex:1}
+.sheets{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.sheet{
+  position:relative;background:var(--panel);border:1px solid var(--steel-soft);
+  border-radius:var(--r);padding:16px 17px 15px;cursor:pointer;
+  transition:border-color .15s,transform .15s;overflow:hidden;
+}
+.sheet:hover{border-color:var(--amber-dim);transform:translateY(-2px)}
+.sheet::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--steel);
+}
+.sheet.molniya::before{background:var(--rust-bright)}
+.sheet.molniya{border-color:rgba(208,106,56,.4)}
+.sheet.is-done{opacity:.5}
+.sheet .kicker{
+  display:flex;align-items:center;gap:10px;margin-bottom:9px;
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ash-dim);
+}
+.sheet h3{
+  margin:0 0 7px;font-family:"Saira Condensed",sans-serif;font-weight:700;
+  font-size:var(--fs-lg);line-height:1.15;letter-spacing:.02em;color:var(--bone);
+}
+.sheet p{margin:0 0 10px;font-size:var(--fs-sm);line-height:1.5;color:var(--ash)}
+.sheet .from{
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.08em;color:var(--ash-dim);
+}
+.tag{
+  display:inline-flex;align-items:center;padding:3px 9px;border-radius:2px;
+  border:1px solid var(--teal-dim);color:var(--teal);
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
+}
+.tag.hot{border-color:var(--rust);color:var(--rust-bright)}
+.tag.loc{border-color:var(--steel);color:var(--ash)}
+.tag.side{border-color:var(--amber-dim);color:var(--amber)}
+.tag.taken{border-color:var(--teal-dim);color:var(--teal)}
+.warnbox{
+  border:1px solid rgba(208,106,56,.45);border-left-width:3px;
+  border-radius:var(--r);background:rgba(180,85,43,.08);
+  padding:11px 13px;margin:0 0 16px;
+  font-size:var(--fs-sm);line-height:1.55;color:var(--bone);
+}
+.thumbrow{display:flex;gap:6px;margin:10px 0}
+.thumbrow img{width:56px;height:56px;object-fit:cover;border:1px solid var(--steel);border-radius:2px}
+.bigimgs{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 4px}
+.bigimgs img{max-width:210px;border:1px solid var(--steel);border-radius:var(--r)}
+.board-empty{
+  padding:52px 20px;text-align:center;border:1px dashed var(--steel);border-radius:var(--r);
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-sm);
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ash-dim);line-height:2;
+}
+.board-empty b{display:block;color:var(--ash);font-size:var(--fs-md);
+  font-family:"Saira Condensed",sans-serif;letter-spacing:.08em;margin-bottom:6px}
+
+/* модалка просмотра/формы */
+.mv h2{margin:0 0 6px;font-family:"Saira Condensed",sans-serif;font-weight:700;
+  font-size:var(--fs-xl);letter-spacing:.03em;color:var(--bone);line-height:1.1}
+.mv .meta{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-xs);
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ash-dim);margin-bottom:14px}
+.mv h4{margin:18px 0 6px;font-family:"IBM Plex Mono",monospace;font-weight:600;
+  font-size:var(--fs-mono-xs);letter-spacing:.2em;text-transform:uppercase;color:var(--amber)}
+.mv .text{white-space:pre-wrap;line-height:1.6;color:var(--bone);font-size:var(--fs-base)}
+.modal.wide{max-width:640px}
+.filebox{border:1px dashed var(--steel);border-radius:var(--r);padding:11px;background:var(--panel-2)}
+.filebox input[type=file]{width:100%;color:var(--ash);font-size:var(--fs-sm)}
+.previews{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.previews img{width:62px;height:62px;object-fit:cover;border:1px solid var(--steel);border-radius:2px}
+.check{display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;
+  color:var(--bone);font-size:var(--fs-base);margin-bottom:14px}
+.check input{accent-color:var(--rust);width:15px;height:15px;margin:0}
+.item-row{display:flex;gap:8px;margin-bottom:9px;align-items:flex-start}
+.item-row .input{flex:1}
+.item-row .kill{background:transparent;border:1px solid var(--steel);color:var(--ash-dim);
+  border-radius:var(--r);width:34px;height:38px;cursor:pointer;flex:none}
+.item-row .kill:hover{color:var(--rust-bright);border-color:var(--rust)}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:200;
+  background:var(--panel-3);border:1px solid var(--amber-dim);border-radius:var(--r);
+  padding:11px 20px;color:var(--bone);box-shadow:var(--shadow);
+  font-family:"IBM Plex Mono",monospace;font-size:var(--fs-mono-sm);
+}
+select.input{appearance:none;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ash) 50%),linear-gradient(135deg,var(--ash) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
+
+@media(max-width:1080px){
+  .layout{grid-template-columns:1fr}
+  .order{position:static;order:3}
+  .mast-slogan{margin-left:0;text-align:left;width:100%}
+}
+@media(max-width:520px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .pda-in{gap:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="pda">
+  <div class="pda-in">
+    <span><span class="dot"></span>Связь: <b class="ok">устойчивая</b></span>
+    <span>Частота: <b>104.4 FM</b></span>
+    <span>Выброс: <b class="warn" id="pdaEm">не ожидается</b></span>
+    <span>Фон: <b class="ok" id="pdaRad">0.14 Р/ч</b></span>
+    <span class="sep"></span>
+    <span id="pdaAuth"></span>
+    <span id="pdaClock">--:--:--</span>
+  </div>
+</div>
+<div class="hazard"></div>
+
+<div class="layout">
+
+  <header class="mast">
+    <div class="mast-row">
+      <div class="wordmark">
+        <div class="name">ХАБАР<i>ОН</i></div>
+        <div class="sub">контракты и новости Бара «100 Рентген»</div>
+      </div>
+      <div class="mast-slogan">
+        С СЫЧЁМ НЕ ТОРГУЮТСЯ
+        <span>Бар 100 Рентген · Выдача и сдача контрактов с 20:00 до 22:00 по Большой Земле</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-v="board">Доска объявлений <span class="cnt" id="cBoard"></span></button>
+    <button class="tab" data-v="task">Контракты <span class="cnt" id="cTask"></span></button>
+    <span class="gap"></span>
+    <span class="who" id="whoBox"></span>
+  </nav>
+
+  <section id="boardWrap">
+    <div class="board-bar">
+      <div class="chips" id="boardFilter"></div>
+      <span class="gap"></span>
+      <button class="btn btn-primary" id="addBtn" style="width:auto;padding:9px 18px" hidden>Повесить</button>
+    </div>
+    <div id="boardStatus" class="board-empty" hidden></div>
+    <div class="sheets" id="sheets">
+      <noscript><div class="board-empty" style="grid-column:1/-1;border-color:var(--rust);color:var(--rust-bright)">В браузере отключён JavaScript — доска без него не работает</div></noscript>
+    </div>
+  </section>
+
+</div>
+
+<div class="hazard"></div>
+<footer><div class="foot-in">
+  <span>ХАБАРОН · Бар «100 Рентген»</span>
+  <span class="sep"></span>
+  <span></span>
+  <span>Объявления и контракты</span>
+</div></footer>
+
+<!-- ВХОД ПО ПАРОЛЮ -->
+<div class="overlay" id="ovLogin">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-top"><h2>Пропуск</h2><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="note" style="margin:0 0 15px">Вешать объявления и контракты могут только свои. Остальные читают.</div>
+      <div class="field"><label for="lgUser">Логин</label>
+        <input class="input" id="lgUser" autocomplete="username"></div>
+      <div class="field"><label for="lgPass">Пароль</label>
+        <input class="input" type="password" id="lgPass" autocomplete="current-password"></div>
+      <button class="btn btn-primary" id="lgGo">Войти</button>
+      <div class="note bad" id="lgErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- НОВОЕ ОБЪЯВЛЕНИЕ -->
+<div class="overlay" id="ovNews">
+  <div class="modal wide">
+    <div class="modal-top"><h2>Новое объявление</h2><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="nCat">Гриф</label>
+        <select class="input" id="nCat">
+          <option value="plain">Обычное объявление</option>
+          <option value="molniya">СРОЧНО — на самый верх доски</option>
+        </select></div>
+      <div class="field"><label for="nTitle">Заголовок</label>
+        <input class="input" id="nTitle" maxlength="90" placeholder="Коротко, как на бумажке у входа"></div>
+      <div class="field"><label for="nBody">Текст</label>
+        <textarea class="textarea" id="nBody" style="min-height:130px" placeholder="Пиши как говоришь."></textarea></div>
+      <div class="field"><label for="nFrom">От кого</label>
+        <select class="input" id="nFrom"></select></div>
+      <div class="field" id="nCallWrap" style="display:none"><label for="nCall">Позывной</label>
+        <input class="input" id="nCall" maxlength="40" placeholder="Например: Хмурый"></div>
+      <button class="btn btn-primary" id="nSave">Повесить на доску</button>
+      <div class="note bad" id="nErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- НОВЫЙ КОНТРАКТ -->
+<div class="overlay" id="ovTask">
+  <div class="modal wide">
+    <div class="modal-top"><h2>Новый контракт</h2><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="tCat">Тип контракта</label>
+        <select class="input" id="tCat"></select></div>
+      <div class="field"><label for="tDesc">Что надо сделать</label>
+        <textarea class="textarea" id="tDesc" style="min-height:130px" placeholder="Что сделать и за что платим."></textarea></div>
+      <div class="field"><label for="tLoc">Локация</label>
+        <input class="input" id="tLoc" maxlength="80" placeholder="Например: Затон, Скадовск — северный причал"></div>
+      <div class="field"><label>Фото цели — если надо</label>
+        <div class="filebox">
+          <input type="file" id="tTarget" accept="image/*" multiple>
+          <div class="previews" id="tTargetPrev"></div>
+        </div></div>
+      <div class="field"><label for="tDeadline">Срок выполнения</label>
+        <input class="input" id="tDeadline" maxlength="60" placeholder="Например: до пятницы, 22:00">
+        <div class="hint">Впишешь срок — контракт уйдёт в срочные.</div></div>
+
+      <div class="field"><label for="tReward">Награда</label>
+        <input class="input" id="tReward" maxlength="120" placeholder="Например: 250 000 руб. на руки">
+        <div class="hint">Деньгами. Либо деньги, либо предмет — вместе не бывает.</div></div>
+
+      <label class="check"><input type="checkbox" id="tHasItems"><span>Награда предметом</span></label>
+      <div id="tItemsWrap" style="display:none">
+        <div id="tItems"></div>
+        <button class="btn btn-ghost" id="tAddItem" type="button" style="width:auto;padding:7px 14px;margin:0 0 14px">+ Ещё предмет</button>
+      </div>
+
+      <div class="field"><label for="tFrom">От кого</label>
+        <select class="input" id="tFrom"></select></div>
+      <div class="field" id="tCallWrap" style="display:none"><label for="tCall">Позывной</label>
+        <input class="input" id="tCall" maxlength="40"></div>
+      <button class="btn btn-primary" id="tSave">Повесить контракт</button>
+      <div class="note bad" id="tErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ПРОСМОТР -->
+<div class="overlay" id="ovView">
+  <div class="modal wide">
+    <div class="modal-top"><h2 id="vKind">Объявление</h2><button class="x" data-close>&times;</button></div>
+    <div class="modal-body mv" id="vBody"></div>
+    <div class="modal-body" id="vFoot" style="padding-top:0;display:flex;gap:9px"></div>
+  </div>
+</div>
+
+<!-- СМЕНА ПАРОЛЯ -->
+<div class="overlay" id="ovPass">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-top"><h2>Смена пароля</h2><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="note" style="margin:0 0 15px">Меняется только для аккаунта, под которым сидишь. Ляжет на сервер, в код лезть не надо.</div>
+      <div class="field"><label for="pw1">Новый пароль</label><input class="input" type="password" id="pw1"></div>
+      <div class="field"><label for="pw2">Ещё раз</label><input class="input" type="password" id="pw2"></div>
+      <button class="btn btn-primary" id="pwGo">Сменить</button>
+      <div class="note bad" id="pwErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- КТО ВЫПОЛНИЛ КОНТРАКТ -->
+<div class="overlay" id="ovDone">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-top"><h2>Контракт выполнен</h2><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="dPerf">Исполнитель</label>
+        <input class="input" id="dPerf" maxlength="60" placeholder="Позывной того, кто сделал">
+        <div class="hint">Уйдёт в таблицу и останется в архиве — кому и за что платили.</div></div>
+      <button class="btn btn-primary" id="dGo">Закрыть контракт</button>
+      <div class="note bad" id="dErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ЗАСТОЛБИТЬ КОНТРАКТ -->
+<div class="overlay" id="ovClaim">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-top"><h2>Взять контракт</h2><button class="x" data-close>&times;</button></div>
+    <div class="modal-body">
+      <div class="steam-box" id="cSteam"></div>
+      <div class="field"><label for="cName">За кем числится</label>
+        <input class="input" id="cName" maxlength="40" placeholder="Позывной или название группировки">
+        <div class="hint">Держится 12 часов, потом освобождается сам. Больше двух контрактов разом не берут.</div></div>
+
+      <div class="warnbox">
+        Взял — делай. Если контракт числится за тобой, а работы не видно,
+        это нарушение договорённости: заказчик вправе объявить тебя в розыск.
+        Понял, что не потянешь — откажись сам, за это ничего не будет.
+      </div>
+      <button class="btn btn-primary" id="cGo">Беру, отвечаю</button>
+      <div class="note bad" id="cErr"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ================= CONFIG =================
+   Сюда вставь ссылку веб-приложения Google Apps Script (заканчивается на /exec).
+   Пока строка пустая — кнопка предложит скопировать заказ вручную.        */
+const SHEET_ENDPOINT = "";
+
+
+/* ========================================== */
+
+/* ---------- АВАРИЙНЫЙ ПЕРЕХВАТЧИК ----------
+   Если скрипт упадёт, человек увидит причину прямо на странице,
+   а не пустой экран. */
+function fatal(msg){
+  const box = document.getElementById('sheets');
+  if(!box) return;
+  const safe = String(msg).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  box.innerHTML =
+    '<div class="board-empty" style="grid-column:1/-1;border-color:#D06A38;color:#D06A38;text-align:left">'+
+    '<b>Доска не запустилась</b>'+
+    '<span style="text-transform:none;letter-spacing:0;color:#CBC7B4">'+safe+'</span><br><br>'+
+    '<span style="text-transform:none;letter-spacing:0;color:#8A8676">'+
+    'Скорее всего мешает расширение браузера — попробуй режим инкогнито '+
+    'или отключи блокировщик на этом сайте. Если не поможет, пришли этот текст.</span></div>';
+}
+window.addEventListener('error', function(e){
+  fatal((e.message||'ошибка')+' · '+(e.filename||'').split('/').pop()+':'+(e.lineno||'?'));
+});
+
+/* ---------- HELPERS ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = id => document.getElementById(id);
+
+/* ---------- STEAM AUTH ---------- */
+const STEAM_ICO = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-9.96 9.2l5.35 2.2a2.8 2.8 0 0 1 1.6-.49h.14l2.38-3.45v-.05a3.77 3.77 0 1 1 3.77 3.77h-.09l-3.4 2.42v.12a2.83 2.83 0 0 1-5.6.55l-3.83-1.58A10 10 0 1 0 12 2zm-3.3 15.16.87.36a2.13 2.13 0 1 0 1.2-3.9l1.11.46a1.57 1.57 0 1 1-1.2 2.9zm9.83-6.58a2.51 2.51 0 1 0-5.02 0 2.51 2.51 0 0 0 5.02 0zm-4.39 0a1.89 1.89 0 1 1 3.77 0 1.89 1.89 0 0 1-3.77 0z"/></svg>';
+let steamToken = null, steamId = null, authErr = false, authMsg = '';
+let cdUntil = 0;
+try{ cdUntil = Number(sessionStorage.getItem('habaron_cd') || 0); }catch(_){}
+
+function cdLeft(){ return Math.max(0, Math.ceil((cdUntil - Date.now())/60000)); }
+function setCooldown(minutes){
+  cdUntil = Date.now() + minutes*60000;
+  try{ sessionStorage.setItem('habaron_cd', String(cdUntil)); }catch(_){}
+}
+
+function setAuth(tok){
+  const p = String(tok).split('.');
+  if(p.length !== 3 || !/^\d{17}$/.test(p[0])) return false;
+  if(Date.now() - Number(p[1]) > 12*3600*1000) return false;
+  steamToken = tok; steamId = p[0];
+  try{ sessionStorage.setItem('habaron_steam', tok); }catch(_){}
+  return true;
+}
+function dropAuth(){
+  steamToken = null; steamId = null;
+  try{ sessionStorage.removeItem('habaron_steam'); }catch(_){}
+  renderAuth();
+}
+function steamReturnUrl(){ return location.origin + location.pathname; }
+
+function steamLogin(){
+  if(!SHEET_ENDPOINT){
+    alert('Вход через Steam ещё не подключён: в файле не указан адрес скрипта.');
+    return;
+  }
+  const p = new URLSearchParams({
+    'openid.ns':        'http://specs.openid.net/auth/2.0',
+    'openid.mode':      'checkid_setup',
+    'openid.return_to': steamReturnUrl(),
+    'openid.realm':     location.origin,
+    'openid.identity':  'http://specs.openid.net/auth/2.0/identifier_select',
+    'openid.claimed_id':'http://specs.openid.net/auth/2.0/identifier_select'
+  });
+  location.href = 'https://steamcommunity.com/openid/login?' + p.toString();
+}
+
+/* Steam возвращает игрока сюда же, с подписью в адресной строке.
+   Подпись отправляем скрипту — он переспрашивает Steam и выдаёт токен. */
+async function handleSteamReturn(){
+  const qs = new URLSearchParams(location.search);
+  if(qs.get('openid.mode') !== 'id_res') return false;
+
+  const params = {};
+  qs.forEach((v,k)=>{ if(k.indexOf('openid.') === 0) params[k] = v; });
+  history.replaceState(null, '', location.pathname);
+
+  $('pdaAuth').innerHTML = '<span class="who">Проверяем Steam...</span>';
+  try{
+    const res = await fetch(SHEET_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ mode:'verifySteam', params: params })
+    });
+    const j = await res.json();
+    if(j.ok && j.token && setAuth(j.token)){
+      authErr = false; authMsg = '';
+    } else {
+      authErr = true;
+      authMsg = j.error || (j.ok ? 'скрипт ответил без токена — похоже, развёрнута старая версия' : 'скрипт отказал');
+      if(j.steamSaid) authMsg += ' (Steam: ' + j.steamSaid + ')';
+      console.warn('Steam auth:', j);
+    }
+  }catch(err){
+    authErr = true;
+    authMsg = 'не дозвонились до скрипта: ' + err.message;
+    console.warn('Steam auth:', err);
+  }
+  renderAuth();
+  return true;
+}
+
+async function loadAuth(){
+  if(await handleSteamReturn()) return;
+  const h = location.hash;
+  if(h.indexOf('#steam=') === 0){
+    const raw = decodeURIComponent(h.slice(7));
+    history.replaceState(null, '', location.pathname + location.search);
+    if(raw === 'error') authErr = true; else setAuth(raw);
+  } else {
+    try{ const st = sessionStorage.getItem('habaron_steam'); if(st) setAuth(st); }catch(_){}
+  }
+  renderAuth();
+}
+
+function shortId(){ return steamId ? steamId.slice(0,4)+'…'+steamId.slice(-4) : ''; }
+function renderAuth(){
+  $('pdaAuth').innerHTML = steamId
+    ? '<span class="who">Steam '+shortId()+'</span> <button class="out" id="btnOut">выйти</button>'
+    : (authErr ? '<span class="warn" title="'+esc(authMsg)+'">вход не прошёл</span> ' : '')+
+      '<button class="steam-btn" id="btnIn">'+STEAM_ICO+'Войти через Steam</button>';
+  const i = $('btnIn'), o = $('btnOut');
+  if(i) i.addEventListener('click', steamLogin);
+  if(o) o.addEventListener('click', dropAuth);
+}
+
+/* ---------- PDA CLOCK ---------- */
+function tick(){
+  const d = new Date();
+  $('pdaClock').textContent = d.toLocaleTimeString('ru-RU',{hour12:false});
+  const r = (0.11 + Math.abs(Math.sin(d.getTime()/40000))*0.09).toFixed(2);
+  $('pdaRad').textContent = r + ' Р/ч';
+}
+setInterval(tick, 1000); tick();
+
+try{
+  renderAuth(); loadAuth();
+}catch(err){
+  fatal(err && err.message ? err.message : String(err));
+  console.error(err);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ДОСКА ОБЪЯВЛЕНИЙ И КОНТРАКТЫ
+   Ходит в тот же Apps Script, что и заказы (SHEET_ENDPOINT).
+   Паролей здесь нет — они лежат на сервере.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Типы контрактов. Добавляешь строку — появляется в списке и в фильтре. */
+const TASK_CATS = [
+  'Поиск предмета',
+  'Поиск артефакта',
+  'Зачистка территории',
+  'Охота на мутантов',
+  'Ликвидация',
+  'Сопровождение',
+  'Охрана объекта',
+  'Доставка груза',
+  'Картографирование',
+  'Разведка',
+  'Добыча документов',
+  'Спасение',
+  'Диверсия',
+  'Ремонт и снабжение',
+  'Спецзадание'
+];
+
+/* Кто под каким логином подписывается — приходит с сервера после входа.
+   В самой странице ни логинов, ни персонажей нет: незачем подсказывать
+   тем, кто захочет подобрать пароль. */
+
+const B = { view:'shop', items:[], login:null, name:null, token:null,
+            authors:[], boss:false, fNews:'all', fTask:'all', loaded:false };
+
+/* ── связь ────────────────────────────────── */
+async function api(action, payload){
+  if(String(SHEET_ENDPOINT).indexOf('http') !== 0)
+    throw new Error('в файле не прописана ссылка на скрипт');
+  const r = await fetch(SHEET_ENDPOINT, {
+    method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(Object.assign({action:action, token:B.token}, payload||{}))
+  });
+  let d;
+  try{ d = await r.json(); }catch(e){ throw new Error('сервер ответил невнятно'); }
+  if(!d.ok) throw new Error(d.error || 'сервер отказал');
+  return d;
+}
+
+/* ── мелочёвка ────────────────────────────── */
+function stamp(ts){
+  const d = new Date(Number(ts)), p = n => String(n).padStart(2,'0');
+  return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear()+' · '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function cut(s, n){
+  s = String(s||'').replace(/\s+/g,' ').trim();
+  return s.length > n ? s.slice(0,n).trim()+'…' : s;
+}
+function thumbUrl(u){ return String(u).replace(/sz=w\d+/, 'sz=w400'); }
+function toast(t){
+  const el = $('toast'); el.textContent = t; el.hidden = false;
+  clearTimeout(el._t); el._t = setTimeout(()=>{ el.hidden = true; }, 3600);
+}
+function openOv(id){
+  $(id).classList.add('open'); document.body.style.overflow='hidden';
+}
+function closeOv(el){
+  el.classList.remove('open');
+  if(!document.querySelector('.overlay.open')) document.body.style.overflow='';
+}
+document.addEventListener('click', e=>{
+  if(e.target.matches('[data-close]')) closeOv(e.target.closest('.overlay'));
+});
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('mousedown', e=>{ if(e.target === o) closeOv(o); });
+});
+
+/* уменьшаем фото прямо в браузере, иначе доска захлебнётся */
+function shrink(file, max){
+  return new Promise((res, rej)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const sc = Math.min(1, max/Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width*sc); c.height = Math.round(img.height*sc);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        res(c.toDataURL('image/jpeg', .72));
+      };
+      img.onerror = rej; img.src = fr.result;
+    };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+
+/* ── пропуск ──────────────────────────────── */
+function keepSession(){
+  try{
+    localStorage.setItem('habaron_board', JSON.stringify({
+      t:B.token, l:B.login, n:B.name, a:B.authors, b:B.boss
+    }));
+  }catch(_){}
+}
+function dropSession(){
+  try{ localStorage.removeItem('habaron_board'); }catch(_){}
+}
+function restoreSession(){
+  try{
+    const s = JSON.parse(localStorage.getItem('habaron_board') || 'null');
+    if(s && s.t && s.l && s.n && Array.isArray(s.a)) setUser(s.l, s.t, s.n, s.a, s.b);
+  }catch(_){}
+}
+function setUser(login, token, name, authors, boss){
+  B.login = login; B.token = token;
+  B.name = name; B.authors = authors || []; B.boss = !!boss;
+}
+function paintWho(){
+  const box = $('whoBox');
+  box.innerHTML = B.login
+    ? 'На доске: <b>'+esc(B.name)+'</b> <button class="out" id="pwBtn">пароль</button>'+
+      ' <button class="out" id="outBtn">выйти</button>'
+    : '<button class="steam-btn" id="inBtn">Войти по пропуску</button>';
+  const i = $('inBtn'), o = $('outBtn'), pw = $('pwBtn');
+  if(i) i.onclick = ()=>{ $('lgErr').textContent=''; $('lgUser').value=''; $('lgPass').value=''; openOv('ovLogin'); };
+  if(o) o.onclick = ()=>{ B.login = B.token = B.name = null; dropSession(); paintWho(); renderBoard(); toast('Вышел. Дальше только смотришь.'); };
+  if(pw) pw.onclick = ()=>{ $('pw1').value=''; $('pw2').value=''; $('pwErr').textContent=''; openOv('ovPass'); };
+  $('addBtn').hidden = !B.login;
+  $('addBtn').textContent = B.view === 'news' ? 'Повесить объявление' : 'Повесить контракт';
+}
+$('lgGo').onclick = async ()=>{
+  const l = $('lgUser').value.trim().toLowerCase(), p = $('lgPass').value;
+  $('lgErr').textContent = 'Проверяю…';
+  try{
+    const d = await api('login', {login:l, pass:p});
+    setUser(d.login, d.token, d.name, d.authors, d.boss); keepSession();
+    closeOv($('ovLogin')); paintWho(); renderBoard(); toast('Здорово, '+d.name+'.');
+  }catch(e){ $('lgErr').textContent = e.message; }
+};
+$('lgPass').addEventListener('keydown', e=>{ if(e.key === 'Enter') $('lgGo').click(); });
+$('pwGo').onclick = async ()=>{
+  const a = $('pw1').value, b = $('pw2').value;
+  if(a.length < 5){ $('pwErr').textContent = 'Короче пяти знаков — не пароль.'; return; }
+  if(a !== b){ $('pwErr').textContent = 'Второй раз вписал другое.'; return; }
+  $('pwErr').textContent = 'Меняю…';
+  try{
+    const d = await api('passwd', {pass:a});
+    B.token = d.token; keepSession(); closeOv($('ovPass')); toast('Пароль сменил.');
+  }catch(e){ $('pwErr').textContent = e.message; }
+};
+
+/* ── вкладки ──────────────────────────────── */
+function setView(v){
+  B.view = v;
+  document.querySelectorAll('#tabs .tab').forEach(t=>
+    t.classList.toggle('on', t.dataset.v === (v === 'news' ? 'board' : 'task')));
+  paintWho();
+  renderFilter(); renderBoard();
+  if(!B.loaded) refresh();
+}
+document.getElementById('tabs').addEventListener('click', e=>{
+  const t = e.target.closest('.tab'); if(!t) return;
+  setView(t.dataset.v === 'board' ? 'news' : 'task');
+});
+$('addBtn').onclick = ()=> B.view === 'news' ? openNews() : openTask();
+
+/* ── загрузка и отрисовка ─────────────────── */
+async function refresh(){
+  const st = $('boardStatus');
+  st.hidden = false; st.innerHTML = '<b>Читаю доску</b>Секунду.';
+  try{
+    const d = await api('list');
+    B.items = d.items || []; B.loaded = true; st.hidden = true;
+    setTimeout(openPending, 0);
+  }catch(e){
+    st.innerHTML = '<b>Доска не отвечает</b>'+esc(e.message);
+  }
+  renderCounts(); renderFilter(); renderBoard();
+}
+
+function renderCounts(){
+  const n = B.items.filter(i=>i.type === 'news').length;
+  const t = B.items.filter(i=>i.type === 'task');
+  $('cBoard').textContent = n ? '['+n+']' : '';
+  $('cTask').textContent = t.length ? '['+t.filter(x=>!x.done).length+'/'+t.length+']' : '';
+}
+
+function renderFilter(){
+  const box = $('boardFilter');
+  if(B.view === 'news'){
+    const cats = [['all','Все'],['molniya','Срочные'],['plain','Обычные']];
+    box.innerHTML = cats.map(([v,l])=>{
+      const n = v === 'all' ? B.items.filter(i=>i.type==='news').length
+                            : B.items.filter(i=>i.type==='news' && (i.cat||'plain') === v).length;
+      return '<button class="chip sub'+(B.fNews===v?' on':'')+'" data-fn="'+v+'">'+l+
+             ' <span class="n">'+n+'</span></button>';
+    }).join('');
+  } else {
+    const list = B.items.filter(i=>i.type === 'task');
+    const hot = list.filter(isHot).length;
+    const sides = [];
+    list.forEach(i=>{ const v = (i.side||'').trim(); if(v && sides.indexOf(v) === -1) sides.push(v); });
+    sides.sort();
+    const present = TASK_CATS.filter(c=>list.some(i=>i.cat === c));
+    box.innerHTML =
+      '<button class="chip sub'+(B.fTask==='all'?' on':'')+'" data-ft="all">Все <span class="n">'+
+      list.length+'</span></button>' +
+      (hot ? '<button class="chip sub hot'+(B.fTask==='__hot__'?' on':'')+'" data-ft="__hot__">Срочные <span class="n">'+
+        hot+'</span></button>' : '') +
+      sides.map(k=>'<button class="chip sub'+(B.fTask==='side:'+k?' on':'')+'" data-ft="side:'+esc(k)+'">'+
+        esc(k)+' <span class="n">'+
+        list.filter(i=>i.side===k).length+'</span></button>').join('') +
+      present.map(c=>'<button class="chip sub'+(B.fTask===c?' on':'')+'" data-ft="'+esc(c)+'">'+
+        esc(c)+' <span class="n">'+list.filter(i=>i.cat===c).length+'</span></button>').join('');
+  }
+}
+$('boardFilter').addEventListener('click', e=>{
+  const b = e.target.closest('.chip'); if(!b) return;
+  if(b.dataset.fn !== undefined) B.fNews = b.dataset.fn; else B.fTask = b.dataset.ft;
+  renderFilter(); renderBoard();
+});
+
+function renderBoard(){
+  const box = $('sheets'); box.innerHTML = '';
+  let list;
+  if(B.view === 'news'){
+    list = B.items.filter(i=>i.type === 'news' &&
+      (B.fNews === 'all' || (i.cat||'plain') === B.fNews));
+    // срочные всегда сверху
+    list.sort((a,b)=>{
+      const am = (a.cat==='molniya')?1:0, bm = (b.cat==='molniya')?1:0;
+      return bm - am || b.ts - a.ts;
+    });
+  } else {
+    list = B.items.filter(i=>i.type === 'task' &&
+      (B.fTask === 'all' ? true :
+       B.fTask === '__hot__' ? isHot(i) :
+       B.fTask.indexOf('side:') === 0 ? i.side === B.fTask.slice(5) :
+       i.cat === B.fTask));
+    // срочные наверх, выполненные вниз
+    list.sort((a,b)=> (a.done?1:0)-(b.done?1:0) || (isHot(b)?1:0)-(isHot(a)?1:0) || b.ts - a.ts);
+  }
+  if(!list.length){
+    if(!$('boardStatus').hidden) return;
+    box.innerHTML = '<div class="board-empty" style="grid-column:1/-1">'+
+      (B.view === 'news'
+        ? '<b>Доска пустая</b>Бармен ещё ничего не вешал.'
+        : '<b>Контрактов нет</b>Тихо в Зоне. Ненадолго.')+'</div>';
+    return;
+  }
+  list.forEach(it=> box.appendChild(it.type === 'news' ? newsSheet(it) : taskSheet(it)));
+}
+
+function sheetEl(cls, onOpen){
+  const el = document.createElement('div');
+  el.className = cls; el.setAttribute('role','button'); el.tabIndex = 0;
+  el.onclick = onOpen;
+  el.addEventListener('keydown', e=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); onOpen(); }
+  });
+  return el;
+}
+
+function newsSheet(it){
+  const hot = it.cat === 'molniya';
+  const el = sheetEl('sheet'+(hot?' molniya':''), ()=>viewNews(it));
+  el.innerHTML =
+    '<div class="kicker"><span class="tag'+(hot?' hot':'')+'">'+(hot?'Срочно':'Объявление')+'</span>'+
+    '<span>'+esc(stamp(it.ts))+'</span></div>'+
+    '<h3>'+esc(it.title)+'</h3>'+
+    '<p>'+esc(cut(it.body,170))+'</p>'+
+    '<div class="from">от: '+esc(it.author)+'</div>';
+  return el;
+}
+
+/* Контракт со сроком — срочный, пока не выполнен. */
+function isHot(it){ return !!(it.deadline && String(it.deadline).trim()) && !it.done; }
+
+function rewardLine(it){
+  if((it.items||[]).length) return it.items.map(i=>i.name).join(', ');
+  return it.reward || '';
+}
+function taskSheet(it){
+  const el = sheetEl('sheet'+(it.done?' is-done':'')+(isHot(it)?' molniya':''), ()=>viewTask(it));
+  const pics = [].concat(it.target||[], (it.items||[]).reduce((a,i)=>a.concat(i.photos||[]), [])).slice(0,3);
+  el.innerHTML =
+    '<div class="kicker"><span class="tag'+(isHot(it)?' hot':'')+'">'+esc(it.cat||'Контракт')+'</span>'+
+    (isHot(it)?'<span class="tag hot">Срок: '+esc(it.deadline)+'</span>':'')+
+    (it.side?'<span class="tag side">'+esc(it.side)+'</span>':'')+
+    '<span>'+esc(stamp(it.ts))+'</span></div>'+
+    '<h3>'+esc(cut(it.desc,54))+'</h3>'+
+    '<p>'+esc(cut(it.desc,150))+'</p>'+
+    (it.loc ? '<div class="kicker"><span class="tag loc">'+esc(it.loc)+'</span></div>' : '')+
+    (pics.length ? '<div class="thumbrow">'+pics.map(u=>'<img src="'+esc(thumbUrl(u))+'" alt="" loading="lazy">').join('')+'</div>' : '')+
+    (it.claim ? '<div class="kicker"><span class="tag taken">Взял: '+esc(it.claim)+'</span></div>' : '')+
+    (rewardLine(it) ? '<div class="from">награда: '+esc(cut(rewardLine(it),60))+'</div>' : '')+
+    '<div class="from">повесил: '+esc(it.author)+
+      (it.done?' · ВЫПОЛНЕН'+(it.performer?', исполнитель '+esc(it.performer):''):'')+'</div>';
+  return el;
+}
+
+/* ── просмотр ─────────────────────────────── */
+/* Снимать с доски может только главный. Отмечать контракт выполненным — любой свой. */
+function canDelete(){ return !!B.boss; }
+function canClose(){ return !!B.login; }
+
+function viewNews(it){
+  $('vKind').textContent = it.cat === 'molniya' ? 'Срочное объявление' : 'Объявление';
+  $('vBody').innerHTML =
+    '<h2>'+esc(it.title)+'</h2>'+
+    '<div class="meta">'+esc(it.author)+' · '+esc(stamp(it.ts))+'</div>'+
+    '<div class="text">'+esc(it.body)+'</div>';
+  const f = $('vFoot'); f.innerHTML = '';
+  if(canDelete()) f.appendChild(delBtn(it));
+  openOv('ovView');
+}
+
+function viewTask(it){
+  $('vKind').textContent = it.cat || 'Контракт';
+  let h = '<h2>'+esc(cut(it.desc,70))+'</h2>'+
+    '<div class="meta">'+esc(it.author)+' · '+esc(stamp(it.ts))+(it.done?' · ВЫПОЛНЕН':'')+'</div>'+
+    '<div class="text">'+esc(it.desc)+'</div>';
+  if(it.loc) h += '<h4>Где</h4><div class="text">'+esc(it.loc)+'</div>';
+  if(it.side) h += '<h4>Чей контракт</h4><div class="text">'+esc(it.side)+'</div>';
+  if(it.deadline) h += '<h4>Срок выполнения</h4><div class="text">'+esc(it.deadline)+'</div>';
+  if(it.claim) h += '<h4>Кто взял</h4><div class="text">'+esc(it.claim)+
+    ' <span style="color:var(--ash-dim)">— до '+esc(stamp(it.claimUntil))+'</span></div>'+
+    '<div class="warnbox">Контракт числится за исполнителем. Не сделает и не откажется — '+
+    'заказчик вправе объявить его в розыск.</div>';
+  if(it.performer) h += '<h4>Исполнитель</h4><div class="text">'+esc(it.performer)+'</div>';
+  if((it.target||[]).length)
+    h += '<h4>Цель</h4><div class="bigimgs">'+it.target.map(u=>'<img src="'+esc(u)+'" alt="" loading="lazy">').join('')+'</div>';
+  if(it.reward) h += '<h4>Награда</h4><div class="text">'+esc(it.reward)+'</div>';
+  if((it.items||[]).length){
+    h += '<h4>Награда предметом</h4>';
+    it.items.forEach(i=>{
+      h += '<div style="margin-bottom:14px"><div class="text"><b>'+esc(i.name)+'</b></div>'+
+        ((i.photos||[]).length ? '<div class="bigimgs">'+i.photos.map(u=>'<img src="'+esc(u)+'" alt="" loading="lazy">').join('')+'</div>' : '')+
+        '</div>';
+    });
+  }
+  $('vBody').innerHTML = h;
+  const f = $('vFoot'); f.innerHTML = '';
+
+  if(!it.done && !it.claim){
+    const c = document.createElement('button');
+    c.className = 'btn btn-primary'; c.style.width='auto'; c.style.padding='9px 16px'; c.style.margin='0';
+    c.textContent = 'Взять контракт';
+    c.onclick = ()=> openClaim(it);
+    f.appendChild(c);
+  }
+  if(it.claim && (B.boss || steamId)){
+    const u = document.createElement('button');
+    u.className = 'btn btn-ghost'; u.style.width='auto'; u.style.padding='9px 16px'; u.style.margin='0';
+    u.textContent = B.boss ? 'Снять с исполнителя' : 'Отказаться';
+    u.onclick = async ()=>{
+      u.disabled = true;
+      try{
+        await api('unclaim', {id:it.id, steamToken:steamToken});
+        closeOv($('ovView')); await refresh(); toast('Контракт снова свободен.');
+      }catch(e){ u.disabled = false; toast('Не вышло: '+e.message); }
+    };
+    f.appendChild(u);
+  }
+
+  if(canClose()){
+    const d = document.createElement('button');
+    d.className = 'btn btn-ghost'; d.style.width = 'auto'; d.style.padding = '9px 16px'; d.style.margin = '0';
+    d.textContent = it.done ? 'Вернуть в работу' : 'Отметить выполненным';
+    d.onclick = ()=>{
+      if(it.done){ closeContract(it, ''); return; }   // вернуть в работу — без вопросов
+      $('dPerf').value = it.performer || ''; $('dErr').textContent = '';
+      openOv('ovDone');
+      $('dGo').onclick = ()=>{
+        const who = $('dPerf').value.trim();
+        if(!who){ $('dErr').textContent = 'Впиши, кто выполнил.'; return; }
+        closeOv($('ovDone')); closeContract(it, who);
+      };
+    };
+    f.appendChild(d);
+  }
+  if(canDelete()) f.appendChild(delBtn(it));
+  openOv('ovView');
+}
+
+function openClaim(it){
+  const box = $('cSteam');
+  $('cErr').textContent = '';
+  if(!steamToken){
+    box.innerHTML = '<div class="row"><span class="txt">Столбить можно только через Steam — '+
+      'чтобы за бронью стоял живой человек, а не шутник.</span>'+
+      '<button class="steam-btn big" id="cIn">'+STEAM_ICO+'Войти через Steam</button></div>';
+    $('cIn').onclick = steamLogin;
+    $('cGo').disabled = true;
+  } else {
+    box.innerHTML = '<div class="row"><span class="txt">Бронь запишется на аккаунт<br><b>'+
+      esc(steamId)+'</b></span></div>';
+    $('cGo').disabled = false;
+  }
+  $('cGo').onclick = async ()=>{
+    const name = $('cName').value.trim();
+    if(name.length < 2){ $('cErr').textContent = 'Впиши позывной или группировку.'; return; }
+    $('cErr').textContent = 'Записываю…'; $('cGo').disabled = true;
+    try{
+      const r = await api('claim', {id:it.id, name:name, steamToken:steamToken});
+      closeOv($('ovClaim')); closeOv($('ovView')); await refresh();
+      toast('Контракт за тобой на '+r.hours+' часов.');
+    }catch(e){ $('cErr').textContent = e.message; }
+    $('cGo').disabled = false;
+  };
+  openOv('ovClaim');
+}
+
+async function closeContract(it, performer){
+  try{
+    await api('toggle', {id:it.id, performer:performer});
+    closeOv($('ovView')); await refresh();
+    toast(it.done ? 'Контракт снова висит.' : 'Контракт закрыт за ' + (performer||'—') + '.');
+  }catch(e){ toast('Не вышло: '+e.message); }
+}
+
+function delBtn(it){
+  const b = document.createElement('button');
+  b.className = 'btn btn-primary'; b.style.width = 'auto'; b.style.padding = '9px 16px'; b.style.margin = '0';
+  b.textContent = 'Снять с доски';
+  b.onclick = async ()=>{
+    if(!confirm('Снять с доски? Обратно не повесить.')) return;
+    b.disabled = true;
+    try{ await api('remove',{id:it.id, type:it.type}); closeOv($('ovView')); await refresh(); toast('Снял.'); }
+    catch(e){ b.disabled = false; toast('Не вышло: '+e.message); }
+  };
+  return b;
+}
+
+/* ── формы ────────────────────────────────── */
+function fillAuthors(selId, wrapId){
+  const sel = $(selId); sel.innerHTML = '';
+  B.authors.forEach(a=>{
+    const o = document.createElement('option'); o.value = a.v; o.textContent = a.l; sel.appendChild(o);
+  });
+  sel.onchange = ()=>{ $(wrapId).style.display = sel.value === '__call__' ? 'block' : 'none'; };
+  sel.onchange();
+}
+function authorValue(selId, callId){
+  const v = $(selId).value;
+  return v === '__call__' ? ($(callId).value.trim() || 'Позывной не указан') : v;
+}
+
+function openNews(){
+  fillAuthors('nFrom','nCallWrap');
+  $('nCat').value = 'plain'; $('nTitle').value = ''; $('nBody').value = '';
+  $('nCall').value = ''; $('nErr').textContent = '';
+  openOv('ovNews');
+}
+$('nSave').onclick = async ()=>{
+  const title = $('nTitle').value.trim(), body = $('nBody').value.trim();
+  if(!title || !body){ $('nErr').textContent = 'Без заголовка и текста вешать нечего.'; return; }
+  $('nErr').textContent = 'Вешаю…'; $('nSave').disabled = true;
+  try{
+    await api('save', { type:'news', cat:$('nCat').value, title:title, body:body,
+                        author:authorValue('nFrom','nCall') });
+    closeOv($('ovNews')); await refresh(); toast('Повесил.');
+  }catch(e){ $('nErr').textContent = e.message; }
+  $('nSave').disabled = false;
+};
+
+let tTargetPics = [];
+function openTask(){
+  const sel = $('tCat'); sel.innerHTML = TASK_CATS.map(c=>'<option>'+esc(c)+'</option>').join('');
+  fillAuthors('tFrom','tCallWrap');
+  $('tDesc').value = ''; $('tLoc').value = ''; $('tDeadline').value = '';
+  $('tCall').value = ''; $('tErr').textContent = '';
+  $('tReward').value = ''; $('tReward').disabled = false; $('tReward').style.opacity = '';
+  $('tReward').placeholder = 'Например: 250 000 руб. на руки';
+  $('tHasItems').checked = false; $('tItemsWrap').style.display = 'none';
+  $('tItems').innerHTML = ''; $('tTargetPrev').innerHTML = ''; tTargetPics = [];
+  addItemRow();
+  openOv('ovTask');
+}
+$('tHasItems').onchange = e=>{
+  const on = e.target.checked;
+  $('tItemsWrap').style.display = on ? 'block' : 'none';
+  // либо деньги, либо предмет: включил предмет — денежная строка гаснет
+  const r = $('tReward');
+  r.disabled = on;
+  r.style.opacity = on ? '.4' : '';
+  r.placeholder = on ? 'Награда предметом — строка не нужна' : 'Например: 250 000 руб. на руки';
+  if(on) r.value = '';
+};
+$('tAddItem').onclick = ()=> addItemRow();
+
+function addItemRow(){
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.innerHTML = '<input class="input" placeholder="Название предмета" data-name>'+
+    '<input type="file" class="input" accept="image/*" multiple data-pic style="max-width:190px">'+
+    '<button class="kill" type="button" title="Убрать">&times;</button>';
+  row._pics = [];
+  row.querySelector('.kill').onclick = ()=> row.remove();
+  row.querySelector('[data-pic]').onchange = async e=>{
+    row._pics = [];
+    for(const f of e.target.files) row._pics.push(await shrink(f, 1100));
+  };
+  $('tItems').appendChild(row);
+}
+$('tTarget').onchange = async e=>{
+  tTargetPics = []; $('tTargetPrev').innerHTML = '';
+  for(const f of e.target.files){
+    const d = await shrink(f, 1100);
+    tTargetPics.push(d);
+    const img = document.createElement('img'); img.src = d; $('tTargetPrev').appendChild(img);
+  }
+};
+$('tSave').onclick = async ()=>{
+  const desc = $('tDesc').value.trim();
+  if(!desc){ $('tErr').textContent = 'Опиши, что надо сделать.'; return; }
+  const byItem = $('tHasItems').checked;
+  const items = [];
+  if(byItem){
+    [...$('tItems').children].forEach(r=>{
+      const n = r.querySelector('[data-name]').value.trim();
+      if(n) items.push({ name:n, photos:r._pics || [] });
+    });
+    if(!items.length){ $('tErr').textContent = 'Награда предметом отмечена, а предмет не назван.'; return; }
+  }
+  const reward = byItem ? '' : $('tReward').value.trim();
+  $('tErr').textContent = 'Вешаю…'; $('tSave').disabled = true;
+  try{
+    await api('save', { type:'task', cat:$('tCat').value, desc:desc,
+                        loc:$('tLoc').value.trim(), reward:reward,
+                        deadline:$('tDeadline').value.trim(),
+                        target:tTargetPics, items:items,
+                        author:authorValue('tFrom','tCall') });
+    closeOv($('ovTask')); await refresh(); toast('Контракт висит.');
+  }catch(e){ $('tErr').textContent = e.message; }
+  $('tSave').disabled = false;
+};
+
+/* ── ссылка на конкретную запись: сайт.ру/#o=ID ──────────
+   Такую ссылку кидает бот в Discord. Открываем нужную
+   вкладку и сразу разворачиваем запись. */
+let pendingOpen = null;
+function grabDeepLink(){
+  const m = String(location.hash||'').match(/^#o=([\w-]+)/);
+  if(!m) return;
+  pendingOpen = m[1];
+  history.replaceState(null,'',location.pathname+location.search);
+}
+function openPending(){
+  if(!pendingOpen) return;
+  const it = B.items.find(x=>String(x.id) === pendingOpen);
+  pendingOpen = null;
+  if(!it){ toast('Запись уже сняли с доски.'); return; }
+  setView(it.type === 'news' ? 'news' : 'task');
+  it.type === 'news' ? viewNews(it) : viewTask(it);
+}
+
+/* ── старт ────────────────────────────────── */
+restoreSession();
+grabDeepLink();
+renderCounts();
+setView('news');
+
+</script>
+</body>
+</html>
