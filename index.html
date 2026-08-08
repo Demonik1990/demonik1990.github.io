@@ -1330,7 +1330,8 @@ function openClaim(it){
     try{
       const r = await api('claim', {id:it.id, name:name, steamToken:steamToken});
       closeOv($('ovClaim')); closeOv($('ovView')); await refresh();
-      toast('Контракт за тобой на '+r.hours+' часов.');
+      toast('Контракт за тобой на '+r.hours+' часов.'+
+        (r.notified === false ? ' В Discord не ушло — проверь вебхуки.' : ''));
     }catch(e){ $('cErr').textContent = e.message; }
     $('cGo').disabled = false;
   };
