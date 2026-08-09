@@ -310,6 +310,8 @@ header.mast{grid-column:1/-1;padding:26px 0 6px}
 .btn-ghost{background:transparent;border-color:var(--cyan-dim);color:var(--cyan);
   font-size:var(--fs-mono-sm);padding:10px;margin-top:8px}
 .btn-ghost:hover{background:rgba(47,198,220,.08);border-color:var(--cyan);color:var(--cyan)}
+.btn-fail{background:rgba(224,86,63,.1);border-color:var(--red);color:var(--red)}
+.btn-fail:hover{background:var(--red);border-color:var(--red);color:#0A0C0E}
 
 /* ============ MODAL ============ */
 .overlay{
@@ -506,6 +508,9 @@ footer{border-top:1px solid var(--line);margin-top:20px}
 .sheet.molniya::before{background:linear-gradient(180deg,var(--orange),transparent)}
 .sheet.molniya{border-color:rgba(255,138,31,.35)}
 .sheet.is-done{opacity:.42}
+.sheet.is-failed{opacity:.55}
+.sheet.is-failed::before{background:linear-gradient(180deg,var(--red),transparent)}
+.sheet.is-failed h3{color:var(--red)}
 .sheet .kicker{
   display:flex;align-items:center;gap:9px;margin-bottom:10px;flex-wrap:wrap;
   font-family:"JetBrains Mono",monospace;font-size:var(--fs-mono-xs);
@@ -774,11 +779,11 @@ select.input{appearance:none;cursor:pointer;
 <!-- КТО ВЫПОЛНИЛ КОНТРАКТ -->
 <div class="overlay" id="ovDone">
   <div class="modal" style="max-width:430px">
-    <div class="modal-top"><h2>Контракт выполнен</h2><button class="x" data-close>&times;</button></div>
+    <div class="modal-top"><h2 id="doneTitle">Контракт выполнен</h2><button class="x" data-close>&times;</button></div>
     <div class="modal-body">
-      <div class="field"><label for="dPerf">Исполнитель</label>
-        <input class="input" id="dPerf" maxlength="60" placeholder="Позывной того, кто сделал">
-        <div class="hint">Уйдёт в таблицу и останется в архиве — кому и за что платили.</div></div>
+      <div class="field"><label for="dPerf" id="doneLabel">Исполнитель</label>
+        <input class="input" id="dPerf" maxlength="60" placeholder="Позывной">
+        <div class="hint" id="doneHint">Уйдёт в таблицу и останется в архиве — кому и за что платили.</div></div>
       <button class="btn btn-primary" id="dGo">Закрыть контракт</button>
       <div class="note bad" id="dErr"></div>
     </div>
@@ -796,9 +801,10 @@ select.input{appearance:none;cursor:pointer;
         <div class="hint">Держится 12 часов, потом освобождается сам. Больше одного контракта разом не берут.</div></div>
 
       <div class="warnbox">
-        Взял — делай. Если контракт числится за тобой, а работы не видно,
-        это нарушение договорённости: заказчик вправе объявить тебя в розыск.
-        Понял, что не потянешь — откажись сам, за это ничего не будет.
+        Берёшь работу, которую заказчик ждёт. В случае провала он вправе
+        объявить исполнителя законной целью для розыска и требовать возмещения —
+        вплоть до ликвидации. Понял, что не потянешь, — откажись заранее,
+        за это ничего не будет.
       </div>
       <button class="btn btn-primary" id="cGo">Беру, отвечаю</button>
       <div class="note bad" id="cErr"></div>
@@ -1196,7 +1202,8 @@ function renderBoard(){
        B.fTask.indexOf('side:') === 0 ? i.side === B.fTask.slice(5) :
        i.cat === B.fTask));
     // срочные наверх, выполненные вниз
-    list.sort((a,b)=> (a.done?1:0)-(b.done?1:0) || (isHot(b)?1:0)-(isHot(a)?1:0) || b.ts - a.ts);
+    const closed = x => (x.done || x.failed) ? 1 : 0;
+    list.sort((a,b)=> closed(a)-closed(b) || (isHot(b)?1:0)-(isHot(a)?1:0) || b.ts - a.ts);
   }
   if(!list.length){
     if(!$('boardStatus').hidden) return;
@@ -1232,14 +1239,15 @@ function newsSheet(it){
 }
 
 /* Контракт со сроком — срочный, пока не выполнен. */
-function isHot(it){ return !!(it.deadline && String(it.deadline).trim()) && !it.done; }
+function isHot(it){ return !!(it.deadline && String(it.deadline).trim()) && !it.done && !it.failed; }
 
 function rewardLine(it){
   if((it.items||[]).length) return it.items.map(i=>i.name).join(', ');
   return it.reward || '';
 }
 function taskSheet(it){
-  const el = sheetEl('sheet'+(it.done?' is-done':'')+(isHot(it)?' molniya':''), ()=>viewTask(it));
+  const el = sheetEl('sheet'+(it.done?' is-done':'')+(it.failed?' is-failed':'')+
+                     (isHot(it)?' molniya':''), ()=>viewTask(it));
   const pics = [].concat(it.target||[], (it.items||[]).reduce((a,i)=>a.concat(i.photos||[]), [])).slice(0,3);
   el.innerHTML =
     '<div class="kicker"><span class="tag'+(isHot(it)?' hot':'')+'">'+esc(it.cat||'Контракт')+'</span>'+
@@ -1253,7 +1261,8 @@ function taskSheet(it){
     (it.claim ? '<div class="kicker"><span class="tag taken">Взял: '+esc(it.claim)+'</span></div>' : '')+
     (rewardLine(it) ? '<div class="from">награда: '+esc(cut(rewardLine(it),60))+'</div>' : '')+
     '<div class="from">повесил: '+esc(it.author)+
-      (it.done?' · ВЫПОЛНЕН'+(it.performer?', исполнитель '+esc(it.performer):''):'')+'</div>';
+      (it.done?' · ВЫПОЛНЕН'+(it.performer?', исполнитель '+esc(it.performer):''):'')+
+      (it.failed?' · ПРОВАЛЕН'+(it.performer?', сорвал '+esc(it.performer):''):'')+'</div>';
   return el;
 }
 
@@ -1274,17 +1283,17 @@ function viewNews(it){
 }
 
 function viewTask(it){
-  $('vKind').textContent = it.cat || 'Контракт';
+  $('vKind').textContent = (it.failed ? 'ПРОВАЛЕН · ' : '') + (it.cat || 'Контракт');
   let h = '<h2>'+esc(cut(it.desc,70))+'</h2>'+
-    '<div class="meta">'+esc(it.author)+' · '+esc(stamp(it.ts))+(it.done?' · ВЫПОЛНЕН':'')+'</div>'+
+    '<div class="meta">'+esc(it.author)+' · '+esc(stamp(it.ts))+(it.done?' · ВЫПОЛНЕН':'')+(it.failed?' · ПРОВАЛЕН':'')+'</div>'+
     '<div class="text">'+esc(it.desc)+'</div>';
   if(it.loc) h += '<h4>Где</h4><div class="text">'+esc(it.loc)+'</div>';
   if(it.side) h += '<h4>Чей контракт</h4><div class="text">'+esc(it.side)+'</div>';
   if(it.deadline) h += '<h4>Срок выполнения</h4><div class="text">'+esc(it.deadline)+'</div>';
   if(it.claim) h += '<h4>Кто взял</h4><div class="text">'+esc(it.claim)+
     ' <span style="color:var(--ash-dim)">— до '+esc(stamp(it.claimUntil))+'</span></div>'+
-    '<div class="warnbox">Контракт числится за исполнителем. Не сделает и не откажется — '+
-    'заказчик вправе объявить его в розыск.</div>';
+    '<div class="warnbox">Контракт числится за исполнителем. В случае провала заказчик вправе '+
+    'объявить его законной целью для розыска и требовать возмещения, вплоть до ликвидации.</div>';
   if(it.performer) h += '<h4>Исполнитель</h4><div class="text">'+esc(it.performer)+'</div>';
   if((it.target||[]).length)
     h += '<h4>Цель</h4><div class="bigimgs">'+it.target.map(u=>'<img src="'+esc(u)+'" alt="" loading="lazy">').join('')+'</div>';
@@ -1321,6 +1330,35 @@ function viewTask(it){
     f.appendChild(u);
   }
 
+  if(canClose() && !it.done && !it.failed){
+    const f = document.createElement('button');
+    f.className = 'btn btn-fail'; f.style.width='auto'; f.style.padding='9px 16px'; f.style.margin='0';
+    f.textContent = 'Отметить проваленным';
+    f.onclick = ()=>{
+      $('dPerf').value = it.claim || it.performer || '';
+      $('dErr').textContent = '';
+      $('doneTitle').textContent = 'Контракт провален';
+      $('doneLabel').textContent = 'Кто сорвал';
+      $('doneHint').textContent = 'Уйдёт в список нарушителей и в чат группировки.';
+      $('dGo').textContent = 'Записать провал';
+      $('dGo').className = 'btn btn-fail';
+      openOv('ovDone');
+      $('dGo').onclick = async ()=>{
+        const w = $('dPerf').value.trim();
+        if(!w){ $('dErr').textContent = 'Впиши, кто сорвал.'; return; }
+        closeOv($('ovDone'));
+        try{
+          const r = await api('fail', {id:it.id, performer:w});
+          closeOv($('ovView')); await refresh();
+          toast('Провал записан. У '+w+' сорванных контрактов: '+r.total+'.');
+        }catch(e){ toast('Не вышло: '+e.message); }
+      };
+    };
+    f.title = 'Исполнитель не сделал работу';
+    f.dataset.role = 'fail';
+    var failBtn = f;
+  }
+
   if(canClose()){
     const d = document.createElement('button');
     d.className = 'btn btn-ghost'; d.style.width = 'auto'; d.style.padding = '9px 16px'; d.style.margin = '0';
@@ -1329,6 +1367,11 @@ function viewTask(it){
       if(it.done){ closeContract(it, ''); return; }   // вернуть в работу — без вопросов
       $('dPerf').value = it.performer || ''; $('dErr').textContent = '';
       openOv('ovDone');
+      $('doneTitle').textContent = 'Контракт выполнен';
+      $('doneLabel').textContent = 'Исполнитель';
+      $('doneHint').textContent = 'Уйдёт в таблицу и останется в архиве — кому и за что платили.';
+      $('dGo').textContent = 'Закрыть контракт';
+      $('dGo').className = 'btn btn-primary';
       $('dGo').onclick = ()=>{
         const who = $('dPerf').value.trim();
         if(!who){ $('dErr').textContent = 'Впиши, кто выполнил.'; return; }
@@ -1336,6 +1379,7 @@ function viewTask(it){
       };
     };
     f.appendChild(d);
+    if(typeof failBtn !== 'undefined' && failBtn) f.appendChild(failBtn);
   }
   if(canDelete()) f.appendChild(delBtn(it));
   openOv('ovView');
