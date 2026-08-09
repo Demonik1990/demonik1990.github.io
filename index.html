@@ -50,6 +50,8 @@ body{
   font-family:"JetBrains Mono",ui-monospace,monospace;
   font-size:var(--fs-base);line-height:1.5;
   -webkit-font-smoothing:antialiased;
+  font-variant-numeric:lining-nums tabular-nums;
+  font-feature-settings:"lnum" 1,"tnum" 1;
 }
 ::selection{background:var(--orange);color:#0A0C0E}
 .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
@@ -110,8 +112,8 @@ header.mast{grid-column:1/-1;padding:26px 0 6px}
 }
 .mast-slogan{
   margin-left:auto;text-align:right;
-  font-family:"Saira Condensed",sans-serif;font-weight:700;
-  font-size:var(--fs-lg);color:var(--bone);letter-spacing:.14em;text-transform:uppercase;
+  font-family:"JetBrains Mono",monospace;font-weight:700;
+  font-size:var(--fs-md);color:var(--bone);letter-spacing:.16em;text-transform:uppercase;
 }
 .mast-slogan span{display:block;font-family:"JetBrains Mono",monospace;
   font-size:var(--fs-mono-xs);letter-spacing:.18em;color:var(--ash-dim);
@@ -162,8 +164,8 @@ header.mast{grid-column:1/-1;padding:26px 0 6px}
   padding-bottom:9px;border-bottom:1px solid var(--line);
 }
 .cat-head h2{
-  margin:0;font-family:"Saira Condensed",sans-serif;font-weight:700;
-  font-size:var(--fs-xl);letter-spacing:.05em;text-transform:uppercase;color:var(--bone);
+  margin:0;font-family:"JetBrains Mono",monospace;font-weight:700;
+  font-size:var(--fs-lg);letter-spacing:.14em;text-transform:uppercase;color:var(--bone);
 }
 .cat-head .count{font-family:"JetBrains Mono",monospace;font-size:var(--fs-mono-sm);
   color:var(--ash-dim);letter-spacing:.1em}
@@ -206,7 +208,7 @@ header.mast{grid-column:1/-1;padding:26px 0 6px}
 }
 .card-body{padding:11px 12px 12px;display:flex;flex-direction:column;gap:9px;flex:1}
 .card-name{
-  font-family:"Saira Condensed",sans-serif;font-weight:600;
+  font-family:"JetBrains Mono",monospace;font-weight:600;
   font-size:var(--fs-md);line-height:1.15;letter-spacing:.02em;color:var(--bone);
 }
 .opts{display:flex;flex-direction:column;gap:5px}
@@ -260,7 +262,7 @@ header.mast{grid-column:1/-1;padding:26px 0 6px}
   display:flex;align-items:center;gap:10px;
 }
 .order-top h2{
-  margin:0;font-family:"Saira Condensed",sans-serif;font-weight:700;
+  margin:0;font-family:"JetBrains Mono",monospace;font-weight:700;
   font-size:var(--fs-lg);letter-spacing:.09em;text-transform:uppercase;color:var(--bone);
 }
 .order-top .cnt{margin-left:auto;font-family:"JetBrains Mono",monospace;
@@ -270,7 +272,7 @@ header.mast{grid-column:1/-1;padding:26px 0 6px}
 .lines::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
 .line{padding:11px 15px;border-bottom:1px solid var(--line);display:flex;gap:10px}
 .line-main{flex:1;min-width:0}
-.line-name{font-family:"Saira Condensed",sans-serif;font-weight:600;
+.line-name{font-family:"JetBrains Mono",monospace;font-weight:600;
   font-size:var(--fs-base);line-height:1.2;color:var(--bone)}
 .line-cfg{font-family:"JetBrains Mono",monospace;font-size:var(--fs-mono-xs);
   color:var(--ash-dim);letter-spacing:.06em;margin-top:2px}
@@ -438,8 +440,8 @@ header.mast{grid-column:1/-1;padding:26px 0 6px}
 .done-box{padding:34px 24px;text-align:center}
 .done-box .mark{width:56px;height:56px;margin:0 auto 16px;stroke:var(--cyan);
   fill:none;stroke-width:2}
-.done-box h3{margin:0 0 8px;font-family:"Saira Condensed",sans-serif;font-weight:700;
-  font-size:var(--fs-xl);letter-spacing:.06em;text-transform:uppercase;color:var(--bone)}
+.done-box h3{margin:0 0 10px;font-family:"JetBrains Mono",monospace;font-weight:700;
+  font-size:var(--fs-lg);letter-spacing:.18em;text-transform:uppercase;color:var(--bone)}
 .done-box p{margin:0 0 6px;color:var(--ash);font-size:var(--fs-base)}
 .done-box .num{font-family:"JetBrains Mono",monospace;font-size:var(--fs-lg);
   color:var(--orange);letter-spacing:.1em;margin:14px 0 18px}
@@ -510,8 +512,8 @@ footer{border-top:1px solid var(--line);margin-top:20px}
   letter-spacing:.16em;text-transform:uppercase;color:var(--ash-dim);
 }
 .sheet h3{
-  margin:0 0 8px;font-family:"Saira Condensed",sans-serif;font-weight:700;
-  font-size:var(--fs-lg);line-height:1.15;letter-spacing:.06em;
+  margin:0 0 9px;font-family:"JetBrains Mono",monospace;font-weight:700;
+  font-size:var(--fs-md);line-height:1.4;letter-spacing:.06em;
   text-transform:uppercase;color:var(--orange);
 }
 .sheet p{margin:0 0 11px;font-size:var(--fs-sm);line-height:1.6;color:var(--ash)}
@@ -544,12 +546,12 @@ footer{border-top:1px solid var(--line);margin-top:20px}
   font-family:"JetBrains Mono",monospace;font-size:var(--fs-mono-sm);
   letter-spacing:.12em;text-transform:uppercase;color:var(--ash-dim);line-height:2;
 }
-.board-empty b{display:block;color:var(--ash);font-size:var(--fs-md);
-  font-family:"Saira Condensed",sans-serif;letter-spacing:.08em;margin-bottom:6px}
+.board-empty b{display:block;color:var(--ash);font-size:var(--fs-mono-sm);
+  font-family:"JetBrains Mono",monospace;letter-spacing:.22em;margin-bottom:9px}
 
 /* модалка просмотра/формы */
-.mv h2{margin:0 0 8px;font-family:"Saira Condensed",sans-serif;font-weight:700;
-  font-size:var(--fs-xl);letter-spacing:.05em;color:var(--bone);line-height:1.15;
+.mv h2{margin:0 0 10px;font-family:"JetBrains Mono",monospace;font-weight:700;
+  font-size:var(--fs-lg);letter-spacing:.05em;color:var(--bone);line-height:1.45;
   text-transform:uppercase}
 .mv .meta{font-family:"JetBrains Mono",monospace;font-size:var(--fs-mono-xs);
   letter-spacing:.12em;text-transform:uppercase;color:var(--ash-dim);margin-bottom:14px}
@@ -1001,7 +1003,10 @@ async function api(action, payload){
 
 /* ── мелочёвка ────────────────────────────── */
 function stamp(ts){
-  const d = new Date(Number(ts)), p = n => String(n).padStart(2,'0');
+  const n = Number(ts);
+  // строку могли добавить руками в таблицу и не проставить дату
+  if(!n || !isFinite(n)) return 'дата не указана';
+  const d = new Date(n), p = x => String(x).padStart(2,'0');
   return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear()+' · '+p(d.getHours())+':'+p(d.getMinutes());
 }
 function cut(s, n){
