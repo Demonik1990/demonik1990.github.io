@@ -684,6 +684,10 @@ select.input{appearance:none;cursor:pointer;
     <div class="modal-body">
       <div class="field"><label for="tCat">Тип контракта</label>
         <select class="input" id="tCat"></select></div>
+
+      <div class="field" id="tSideWrap"><label for="tSide">Чей контракт</label>
+        <select class="input" id="tSide"></select>
+        <div class="hint">От этого зависит, в какой чат уйдёт оповещение.</div></div>
       <div class="field"><label for="tDesc">Что надо сделать</label>
         <textarea class="textarea" id="tDesc" style="min-height:130px" placeholder="Что сделать и за что платим."></textarea></div>
       <div class="field"><label for="tLoc">Локация</label>
@@ -957,7 +961,7 @@ const TASK_CATS = [
    тем, кто захочет подобрать пароль. */
 
 const B = { view:'shop', items:[], login:null, name:null, token:null,
-            authors:[], boss:false, fNews:'all', fTask:'all', loaded:false };
+            authors:[], boss:false, side:'', sides:[], fNews:'all', fTask:'all', loaded:false };
 
 /* ── связь ────────────────────────────────── */
 async function api(action, payload){
@@ -1024,7 +1028,7 @@ function shrink(file, max){
 function keepSession(){
   try{
     localStorage.setItem('habaron_board', JSON.stringify({
-      t:B.token, l:B.login, n:B.name, a:B.authors, b:B.boss
+      t:B.token, l:B.login, n:B.name, a:B.authors, b:B.boss, s:B.side, ss:B.sides
     }));
   }catch(_){}
 }
@@ -1034,12 +1038,13 @@ function dropSession(){
 function restoreSession(){
   try{
     const s = JSON.parse(localStorage.getItem('habaron_board') || 'null');
-    if(s && s.t && s.l && s.n && Array.isArray(s.a)) setUser(s.l, s.t, s.n, s.a, s.b);
+    if(s && s.t && s.l && s.n && Array.isArray(s.a)) setUser(s.l, s.t, s.n, s.a, s.b, s.s, s.ss);
   }catch(_){}
 }
-function setUser(login, token, name, authors, boss){
+function setUser(login, token, name, authors, boss, side, sides){
   B.login = login; B.token = token;
   B.name = name; B.authors = authors || []; B.boss = !!boss;
+  B.side = side || ''; B.sides = sides || [];
 }
 function paintWho(){
   const box = $('whoBox');
@@ -1059,7 +1064,7 @@ $('lgGo').onclick = async ()=>{
   $('lgErr').textContent = 'Проверяю…';
   try{
     const d = await api('login', {login:l, pass:p});
-    setUser(d.login, d.token, d.name, d.authors, d.boss); keepSession();
+    setUser(d.login, d.token, d.name, d.authors, d.boss, d.side, d.sides); keepSession();
     closeOv($('ovLogin')); paintWho(); renderBoard(); toast('Здорово, '+d.name+'.');
   }catch(e){ $('lgErr').textContent = e.message; }
 };
@@ -1363,7 +1368,9 @@ function delBtn(it){
 function fillAuthors(selId, wrapId){
   const sel = $(selId); sel.innerHTML = '';
   B.authors.forEach(a=>{
-    const o = document.createElement('option'); o.value = a.v; o.textContent = a.l; sel.appendChild(o);
+    const o = document.createElement('option');
+    o.value = a.v; o.textContent = a.l;
+    sel.appendChild(o);
   });
   sel.onchange = ()=>{ $(wrapId).style.display = sel.value === '__call__' ? 'block' : 'none'; };
   sel.onchange();
@@ -1394,6 +1401,19 @@ $('nSave').onclick = async ()=>{
 let tTargetPics = [];
 function openTask(){
   const sel = $('tCat'); sel.innerHTML = TASK_CATS.map(c=>'<option>'+esc(c)+'</option>').join('');
+
+  // сторону выбирает только главный: у группировок она своя и не меняется
+  const ss = $('tSide');
+  if(B.boss){
+    $('tSideWrap').style.display = 'block';
+    ss.disabled = false;
+    ss.innerHTML = '<option value="">Без стороны — в общий канал</option>' +
+      (B.sides||[]).map(x=>'<option>'+esc(x)+'</option>').join('');
+  } else {
+    $('tSideWrap').style.display = B.side ? 'block' : 'none';
+    ss.disabled = true;
+    ss.innerHTML = '<option>'+esc(B.side||'')+'</option>';
+  }
   fillAuthors('tFrom','tCallWrap');
   $('tDesc').value = ''; $('tLoc').value = ''; $('tDeadline').value = '';
   $('tCall').value = ''; $('tErr').textContent = '';
@@ -1453,7 +1473,7 @@ $('tSave').onclick = async ()=>{
   const reward = byItem ? '' : $('tReward').value.trim();
   $('tErr').textContent = 'Вешаю…'; $('tSave').disabled = true;
   try{
-    await api('save', { type:'task', cat:$('tCat').value, desc:desc,
+    await api('save', { type:'task', cat:$('tCat').value, side:$('tSide').value, desc:desc,
                         loc:$('tLoc').value.trim(), reward:reward,
                         deadline:$('tDeadline').value.trim(),
                         target:tTargetPics, items:items,
